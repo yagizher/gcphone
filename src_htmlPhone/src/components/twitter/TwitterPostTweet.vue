@@ -8,6 +8,7 @@
           :placeholder="IntlString('APP_TWITTER_PLACEHOLDER_MESSAGE')"
         ></textarea>
         <span class='tweet_send' @click="tweeter">{{ IntlString('APP_TWITTER_BUTTON_ACTION_TWEETER') }}</span>
+        <span class='tweet_photo' @click="postphoto">{{ IntlString('APP_TWITTER_BUTTON_PHOTO_TWEETER') }}</span>
     </div>
   </div>
 </template>
@@ -23,12 +24,18 @@ export default {
     }
   },
   computed: {
-    ...mapGetters(['IntlString', 'useMouse'])
+    ...mapGetters(['IntlString', 'useMouse', 'enableTakePhoto'])
   },
   watch: {
   },
   methods: {
     ...mapActions(['twitterPostTweet']),
+        async postphoto () {
+      const { url } = await this.$phoneAPI.takePhoto()
+      if (url !== null && url !== undefined) {
+        await this.twitterPostTweet({ message: url })
+      }
+    },
     async onEnter () {
       try {
         const rep = await this.$phoneAPI.getReponseText({
